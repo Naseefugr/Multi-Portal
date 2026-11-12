@@ -4,9 +4,11 @@ import {
   INITIAL_CLASS_POSTS,
   INITIAL_ASSIGNMENTS,
   INITIAL_SUBMISSIONS,
+  BRIGHT_TENANT_ID,
 } from '@/services/mock-data'
 import { useTenant } from '@/contexts/tenant-context'
 import { useAuth } from '@/contexts/auth-context'
+import { supabase, isLiveSupabaseConfigured } from '@/integrations/supabase/client'
 
 interface LearningContextType {
   classPosts: ClassPost[]
@@ -55,7 +57,7 @@ const LearningContext = createContext<LearningContextType | undefined>(undefined
 export function LearningProvider({ children }: { children: React.ReactNode }) {
   const { currentTenant } = useTenant()
   const { currentUser, userRole } = useAuth()
-  const tenantId = currentTenant?.id || 'inst-001-bright'
+  const tenantId = currentTenant?.id || BRIGHT_TENANT_ID
 
   const [classPosts, setClassPosts] = useState<ClassPost[]>(() => {
     const saved = localStorage.getItem(`educore_posts_${tenantId}`)
@@ -72,7 +74,37 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
     return saved ? JSON.parse(saved) : INITIAL_SUBMISSIONS
   })
 
-  // Synchronize changes
+  // Synchronize from live Supabase on mount & tenant change
+  useEffect(() => {
+    if (!isLiveSupabaseConfigured) return
+    let isMounted = true
+
+    async function loadLearningData() {
+      try {
+        const [postsRes, asgRes, subRes] = await Promise.all([
+          supabase.from('class_posts').select('*').eq('institution_id', tenantId).order('created_at', { ascending: false }),
+          supabase.from('assignments').select('*').eq('institution_id', tenantId).order('created_at', { ascending: false }),
+          supabase.from('assignment_submissions').select('*').eq('institution_id', tenantId),
+        ])
+
+        if (isMounted) {
+          if (postsRes.data && postsRes.data.length > 0) setClassPosts(postsRes.data as ClassPost[])
+          if (asgRes.data && asgRes.data.length > 0) setAssignments(asgRes.data as Assignment[])
+          if (subRes.data && subRes.data.length > 0) setSubmissions(subRes.data as AssignmentSubmission[])
+        }
+      } catch (err) {
+        console.info('Supabase learning sync notice:', err)
+      }
+    }
+
+    loadLearningData()
+
+    return () => {
+      isMounted = false
+    }
+  }, [tenantId])
+
+  // Synchronize changes to localStorage
   useEffect(() => {
     if (!currentTenant) return
     localStorage.setItem(`educore_posts_${tenantId}`, JSON.stringify(classPosts))
@@ -88,8 +120,9 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
     isPinned?: boolean
     attachmentName?: string
   }) => {
+    const newPostId = `0192e85a-0050-7000-8000-${Date.now().toString(16).padStart(12, '0').slice(-12)}`
     const newPost: ClassPost = {
-      id: `post-${Date.now()}`,
+      id: newPostId,
       institution_id: tenantId,
       author_id: currentUser?.id || 'usr-teacher-bright',
       author_name: currentUser?.full_name || 'Teacher',
@@ -113,11 +146,36 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
       created_at: new Date().toISOString(),
     }
     setClassPosts((prev) => [newPost, ...prev])
+
+    if (isLiveSupabaseConfigured) {
+      supabase.from('class_posts').insert([{
+        id: newPost.id,
+        institution_id: newPost.institution_id,
+        author_name: newPost.author_name,
+        cohort_name: newPost.cohort_name,
+        subject_name: newPost.subject_name,
+        title: newPost.title,
+        content: newPost.content,
+        is_pinned: newPost.is_pinned,
+        status: newPost.status,
+      }]).then(({ error }) => {
+        if (error) console.info('Supabase post insert notice:', error.message)
+      })
+    }
   }
 
   const togglePinPost = (id: string) => {
     setClassPosts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, is_pinned: !p.is_pinned } : p))
+      prev.map((p) => {
+        if (p.id === id) {
+          const nextPinned = !p.is_pinned
+          if (isLiveSupabaseConfigured) {
+            supabase.from('class_posts').update({ is_pinned: nextPinned }).eq('id', id).then()
+          }
+          return { ...p, is_pinned: nextPinned }
+        }
+        return p
+      })
     )
   }
 
@@ -131,8 +189,9 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
     deadline: string
     allowLate: boolean
   }) => {
+    const newAsgId = `0192e85a-0060-7000-8000-${Date.now().toString(16).padStart(12, '0').slice(-12)}`
     const newAsg: Assignment = {
-      id: `asg-${Date.now()}`,
+      id: newAsgId,
       institution_id: tenantId,
       author_id: currentUser?.id || 'usr-teacher-bright',
       author_name: currentUser?.full_name || 'Faculty Member',
@@ -148,6 +207,23 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
       created_at: new Date().toISOString(),
     }
     setAssignments((prev) => [newAsg, ...prev])
+
+    if (isLiveSupabaseConfigured) {
+      supabase.from('assignments').insert([{
+        id: newAsg.id,
+        institution_id: newAsg.institution_id,
+        cohort_name: newAsg.cohort_name,
+        subject_name: newAsg.subject_name,
+        title: newAsg.title,
+        instructions: newAsg.instructions,
+        max_marks: newAsg.max_marks,
+        deadline: newAsg.deadline,
+        allow_late_submissions: newAsg.allow_late_submissions,
+        status: newAsg.status,
+      }]).then(({ error }) => {
+        if (error) console.info('Supabase assignment insert notice:', error.message)
+      })
+    }
   }
 
   const submitAssignment = (data: {
@@ -155,8 +231,9 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
     submissionText: string
     attachmentFileName?: string
   }) => {
+    const newSubId = `0192e85a-0070-7000-8000-${Date.now().toString(16).padStart(12, '0').slice(-12)}`
     const newSub: AssignmentSubmission = {
-      id: `sub-${Date.now()}`,
+      id: newSubId,
       institution_id: tenantId,
       assignment_id: data.assignmentId,
       student_membership_id: 'mem-student-bright',
@@ -167,6 +244,19 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
       status: 'submitted',
     }
     setSubmissions((prev) => [newSub, ...prev.filter((s) => s.assignment_id !== data.assignmentId)])
+
+    if (isLiveSupabaseConfigured) {
+      supabase.from('assignment_submissions').insert([{
+        id: newSub.id,
+        institution_id: newSub.institution_id,
+        assignment_id: newSub.assignment_id,
+        student_name: newSub.student_name,
+        submission_text: newSub.submission_text,
+        status: newSub.status,
+      }]).then(({ error }) => {
+        if (error) console.info('Supabase submission insert notice:', error.message)
+      })
+    }
   }
 
   const gradeSubmission = (data: {
@@ -176,21 +266,31 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
     feedback: string
   }) => {
     setSubmissions((prev) =>
-      prev.map((sub) =>
-        sub.id === data.submissionId
-          ? {
-              ...sub,
+      prev.map((sub) => {
+        if (sub.id === data.submissionId) {
+          if (isLiveSupabaseConfigured) {
+            supabase.from('assignment_submissions').update({
+              marks_obtained: data.marksObtained,
+              feedback: data.feedback,
               status: 'evaluated',
-              grade: {
-                marks_obtained: data.marksObtained,
-                max_marks: data.maxMarks,
-                feedback: data.feedback,
-                evaluator_name: currentUser?.full_name || 'Evaluating Faculty',
-                graded_at: new Date().toISOString(),
-              },
-            }
-          : sub
-      )
+            }).eq('id', data.submissionId).then()
+          }
+          return {
+            ...sub,
+            status: 'evaluated',
+            marks_obtained: data.marksObtained,
+            feedback: data.feedback,
+            grade: {
+              marks_obtained: data.marksObtained,
+              max_marks: data.maxMarks,
+              feedback: data.feedback,
+              evaluator_name: currentUser?.full_name || 'Evaluating Faculty',
+              graded_at: new Date().toISOString(),
+            },
+          }
+        }
+        return sub
+      })
     )
   }
 

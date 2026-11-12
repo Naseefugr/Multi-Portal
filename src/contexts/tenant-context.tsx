@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react'
 import type { Institution, TenantStatus, InstitutionType } from '@/types/database.types'
-import { INITIAL_INSTITUTIONS } from '@/services/mock-data'
 import { supabase, isLiveSupabaseConfigured } from '@/integrations/supabase/client'
+
+import { BRIGHT_TENANT_ID, APEX_TENANT_ID, ALNOOR_TENANT_ID } from '@/services/mock-data'
 
 export const RESERVED_SUBDOMAINS = [
   'www', 'admin', 'api', 'app', 'auth', 'billing', 'blog', 'cdn',
@@ -35,12 +36,30 @@ const TenantContext = createContext<TenantContextType | undefined>(undefined)
 export function TenantProvider({ children }: { children: React.ReactNode }) {
   const [institutions, setInstitutions] = useState<Institution[]>(() => {
     const saved = localStorage.getItem('educore_institutions')
-    return saved ? JSON.parse(saved) : INITIAL_INSTITUTIONS
+    if (saved) {
+      try {
+        const parsed: Institution[] = JSON.parse(saved)
+        const nonDemo = parsed.filter(
+          (i) =>
+            !['inst-001-bright', 'inst-002-apex', 'inst-003-alnoor', BRIGHT_TENANT_ID, APEX_TENANT_ID, ALNOOR_TENANT_ID].includes(i.id) &&
+            !['bright', 'apex-prep', 'alnoor'].includes(i.slug)
+        )
+        return nonDemo
+      } catch {
+        return []
+      }
+    }
+    return []
   })
 
-  // Local development / simulated subdomain override
+  // Local development / simulated subdomain override: Defaults to null (Home page)
   const [devSubdomain, setDevSubdomain] = useState<string | null>(() => {
-    return localStorage.getItem('educore_dev_subdomain') || 'bright'
+    const isAuth = localStorage.getItem('educore_auth_state') === 'true'
+    if (!isAuth) {
+      localStorage.removeItem('educore_dev_subdomain')
+      return null
+    }
+    return localStorage.getItem('educore_dev_subdomain') || null
   })
 
   // Sync from live Supabase on load

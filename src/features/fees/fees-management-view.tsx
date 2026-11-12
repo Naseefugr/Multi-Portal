@@ -40,7 +40,7 @@ export function FeesManagementView() {
   const [transactionRef, setTransactionRef] = useState('')
   const [paymentSuccessReceipt, setPaymentSuccessReceipt] = useState<PaymentReceipt | null>(null)
 
-  const canManageFees =
+  const _canManageFees =
     userRole === 'institution_admin' ||
     (userRole === 'manager' && hasPermission('fees.collect_payment'))
   const isStudentOrParent = userRole === 'student' || userRole === 'parent'

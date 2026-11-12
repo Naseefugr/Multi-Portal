@@ -45,7 +45,7 @@ export function RoleDashboardView({ onNavigate }: RoleDashboardProps) {
   // Student specific filters
   const mySubmissions = submissions.filter((s) => s.student_name.includes('Aarav'))
   const myResults = examResults.filter((r) => r.student_name.includes('Aarav'))
-  const myInvoices = invoices.filter((i) => i.student_name.includes('Aarav'))
+  const _myInvoices = invoices.filter((i) => i.student_name.includes('Aarav'))
 
   return (
     <div className="space-y-6">

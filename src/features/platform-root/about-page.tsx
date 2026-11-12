@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useTenant, RESERVED_SUBDOMAINS } from '@/contexts/tenant-context'
+import { useAuth } from '@/contexts/auth-context'
 import type { InstitutionType } from '@/types/database.types'
 import {
   Sparkles,
   ArrowRight,
   CheckCircle2,
-  Lock,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
+import { SignInModal } from '@/components/common/SignInModal'
 
 // Shared Landing Components
 import { Navbar } from '@/components/landing/navbar'
@@ -33,6 +34,7 @@ import { Footer } from '@/components/landing/footer'
 export function AboutPage() {
   const location = useLocation()
   const { allInstitutions, setDevSubdomain, registerInstitution } = useTenant()
+  const { signIn } = useAuth()
 
   // Modal Dialog States
   const [isRegisterOpen, setIsRegisterOpen] = useState(false)
@@ -123,15 +125,11 @@ export function AboutPage() {
       }
 
       setIsRegisterOpen(false)
+      signIn(formData.contact_email, '', 'institution_admin')
       setDevSubdomain(formData.slug)
     } finally {
       setIsSubmitting(false)
     }
-  }
-
-  const handleLaunchDemoInstitution = (slug: string) => {
-    setDevSubdomain(slug)
-    setIsSignInOpen(false)
   }
 
   return (
@@ -356,63 +354,15 @@ export function AboutPage() {
         </DialogContent>
       </Dialog>
 
-      {/* DIALOG 2: INSTANT DEMO LAUNCHER / SIGN IN */}
-      <Dialog open={isSignInOpen} onOpenChange={setIsSignInOpen}>
-        <DialogContent className="max-w-md p-6 rounded-3xl border-slate-200">
-          <div className="text-center space-y-2 mb-4">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 mb-1">
-              <Lock className="h-6 w-6" />
-            </div>
-            <DialogTitle className="text-xl font-bold text-slate-900">
-              Sign In to Your Institution
-            </DialogTitle>
-            <DialogDescription className="text-xs text-slate-500">
-              Select one of the live seeded demo institutions or enter your subdomain.
-            </DialogDescription>
-          </div>
-
-          <div className="space-y-2">
-            <p className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-              Quick Launch Seeded Demo Portals:
-            </p>
-            {allInstitutions.map((inst) => (
-              <button
-                key={inst.id}
-                type="button"
-                onClick={() => handleLaunchDemoInstitution(inst.slug)}
-                className="w-full text-left p-3 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 transition-all flex items-center justify-between group cursor-pointer"
-              >
-                <div>
-                  <div className="text-xs font-bold text-slate-900 group-hover:text-blue-700">
-                    {inst.name}
-                  </div>
-                  <div className="text-[11px] text-slate-500 font-mono">
-                    {inst.slug}.educore.com
-                  </div>
-                </div>
-                <div className="text-xs font-semibold text-blue-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                  <span>Enter</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </div>
-              </button>
-            ))}
-          </div>
-
-          <div className="pt-4 border-t border-slate-100 text-center">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setIsSignInOpen(false)
-                setIsRegisterOpen(true)
-              }}
-              className="text-xs"
-            >
-              Need a new portal? Register here
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* DIALOG 2: SIGN IN MODAL */}
+      <SignInModal
+        isOpen={isSignInOpen}
+        onClose={() => setIsSignInOpen(false)}
+        onOpenRegister={() => {
+          setIsSignInOpen(false)
+          setIsRegisterOpen(true)
+        }}
+      />
     </div>
   )
 }

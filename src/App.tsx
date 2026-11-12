@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { TenantProvider, useTenant } from '@/contexts/tenant-context'
-import { AuthProvider } from '@/contexts/auth-context'
+import { AuthProvider, useAuth } from '@/contexts/auth-context'
 import { AcademicProvider } from '@/contexts/academic-context'
 import { LearningProvider } from '@/contexts/learning-context'
 import { OperationsProvider } from '@/contexts/operations-context'
@@ -14,9 +14,11 @@ import { SuspendedScreen } from '@/features/tenant/suspended-screen'
 import { TenantDashboardShell } from '@/features/tenant/tenant-dashboard-shell'
 
 function AppRouter() {
-  const { isPlatformRoot, isPlatformAdmin, isSuspended } = useTenant()
+  const { currentTenant, isPlatformAdmin, isSuspended } = useTenant()
+  const { isAuthenticated } = useAuth()
 
-  if (isPlatformRoot) {
+  // First open home page. If not signed in, always open home.
+  if (!isAuthenticated) {
     return (
       <Routes>
         <Route path="/" element={<LandingPage />} />
@@ -26,6 +28,7 @@ function AppRouter() {
     )
   }
 
+  // If signed in: open their account!
   if (isPlatformAdmin) {
     return <FounderPortal />
   }
@@ -34,7 +37,18 @@ function AppRouter() {
     return <SuspendedScreen />
   }
 
-  return <TenantDashboardShell />
+  if (currentTenant) {
+    return <TenantDashboardShell />
+  }
+
+  // Fallback if signed in without specific tenant selected
+  return (
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  )
 }
 
 export function App() {

@@ -25,6 +25,7 @@ This file is the single source of truth for all reusable UI components in the **
 | **`FlatCard`** | `src/components/common/FlatCard.tsx` | Single-level flattened card surface (no nesting) | `title`, `actions`, `badge`, `children`, `footer` |
 | **`Button`** | `src/components/common/Button.tsx` | Core button component | `variant` (`primary` \| `secondary` \| `danger` \| `ghost`), `size`, `isLoading` |
 | **`InputField`** | `src/components/common/InputField.tsx` | Clean input component without redundant text | `label`, `error`, `type`, `value`, `onChange` |
+| **`SignInModal`** | `src/components/common/SignInModal.tsx` | Secure account login modal without demo bypass links | `isOpen`, `onClose`, `onOpenRegister` |
 
 ---
 
@@ -148,6 +149,28 @@ This file is the single source of truth for all reusable UI components in the **
     label: string;
     error?: string;
   }
+  ```
+
+---
+
+### 3.6 `SignInModal`
+- **Path:** `src/components/common/SignInModal.tsx`
+- **Purpose:** Secure authentication popup modal for signing into institution accounts without exposed demo lists or quick bypasses.
+- **Props Interface:**
+  ```typescript
+  interface SignInModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onOpenRegister: () => void;
+  }
+  ```
+- **Usage Example:**
+  ```tsx
+  <SignInModal
+    isOpen={isSignInOpen}
+    onClose={() => setIsSignInOpen(false)}
+    onOpenRegister={() => setIsRegisterOpen(true)}
+  />
   ```
 
 ---

@@ -20,8 +20,10 @@ import {
   INITIAL_TEACHER_ASSIGNMENTS,
   INITIAL_STUDENTS,
   INITIAL_MANAGER_OVERRIDES,
+  BRIGHT_TENANT_ID,
 } from '@/services/mock-data'
 import { useTenant } from '@/contexts/tenant-context'
+import { supabase, isLiveSupabaseConfigured } from '@/integrations/supabase/client'
 
 interface AcademicContextType {
   academicYears: AcademicYear[]
@@ -70,7 +72,7 @@ const AcademicContext = createContext<AcademicContextType | undefined>(undefined
 
 export function AcademicProvider({ children }: { children: React.ReactNode }) {
   const { currentTenant } = useTenant()
-  const tenantId = currentTenant?.id || 'inst-001-bright'
+  const tenantId = currentTenant?.id || BRIGHT_TENANT_ID
 
   const [academicYears, setAcademicYears] = useState<AcademicYear[]>(() => {
     const saved = localStorage.getItem(`educore_years_${tenantId}`)
@@ -117,6 +119,42 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
     return saved ? JSON.parse(saved) : INITIAL_MANAGER_OVERRIDES
   })
 
+  // Synchronize from live Supabase on mount & tenant switch
+  useEffect(() => {
+    if (!isLiveSupabaseConfigured) return
+    let isMounted = true
+
+    async function loadAcademicData() {
+      try {
+        const [yearsRes, classesRes, sectionsRes, subjectsRes, coursesRes, batchesRes] = await Promise.all([
+          supabase.from('academic_years').select('*').eq('institution_id', tenantId),
+          supabase.from('classes').select('*').eq('institution_id', tenantId).order('display_order', { ascending: true }),
+          supabase.from('sections').select('*').eq('institution_id', tenantId),
+          supabase.from('subjects').select('*').eq('institution_id', tenantId),
+          supabase.from('courses').select('*').eq('institution_id', tenantId),
+          supabase.from('batches').select('*').eq('institution_id', tenantId),
+        ])
+
+        if (isMounted) {
+          if (yearsRes.data && yearsRes.data.length > 0) setAcademicYears(yearsRes.data as AcademicYear[])
+          if (classesRes.data && classesRes.data.length > 0) setClasses(classesRes.data as SchoolClass[])
+          if (sectionsRes.data && sectionsRes.data.length > 0) setSections(sectionsRes.data as SchoolSection[])
+          if (subjectsRes.data && subjectsRes.data.length > 0) setSubjects(subjectsRes.data as Subject[])
+          if (coursesRes.data && coursesRes.data.length > 0) setCourses(coursesRes.data as CoachingCourse[])
+          if (batchesRes.data && batchesRes.data.length > 0) setBatches(batchesRes.data as CoachingBatch[])
+        }
+      } catch (err) {
+        console.info('Supabase academic load notice:', err)
+      }
+    }
+
+    loadAcademicData()
+
+    return () => {
+      isMounted = false
+    }
+  }, [tenantId])
+
   // Synchronize state when switching tenants
   useEffect(() => {
     if (!currentTenant) return
@@ -129,8 +167,9 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
   }, [students, classes, sections, subjects, teacherAssignments, managerOverrides, currentTenant, tenantId])
 
   const addAcademicYear = (name: string, startDate: string, endDate: string) => {
+    const newYearId = `0192e85a-0010-7000-8000-${Date.now().toString(16).padStart(12, '0').slice(-12)}`
     const newYear: AcademicYear = {
-      id: `ay-${Date.now()}`,
+      id: newYearId,
       institution_id: tenantId,
       name,
       start_date: startDate,
@@ -139,23 +178,37 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
       created_at: new Date().toISOString(),
     }
     setAcademicYears((prev) => [newYear, ...prev])
+
+    if (isLiveSupabaseConfigured) {
+      supabase.from('academic_years').insert([newYear]).then(({ error }) => {
+        if (error) console.info('Supabase academic_year insert notice:', error.message)
+      })
+    }
   }
 
   const addClass = (name: string) => {
+    const newClassId = `0192e85a-0020-7000-8000-${Date.now().toString(16).padStart(12, '0').slice(-12)}`
     const newClass: SchoolClass = {
-      id: `cls-${Date.now()}`,
+      id: newClassId,
       institution_id: tenantId,
-      academic_year_id: academicYears[0]?.id || 'ay-2026',
+      academic_year_id: academicYears[0]?.id || '0192e85a-0010-7000-8000-000000000001',
       name,
       display_order: classes.length + 1,
       created_at: new Date().toISOString(),
     }
     setClasses((prev) => [...prev, newClass])
+
+    if (isLiveSupabaseConfigured) {
+      supabase.from('classes').insert([newClass]).then(({ error }) => {
+        if (error) console.info('Supabase class insert notice:', error.message)
+      })
+    }
   }
 
   const addSection = (classId: string, name: string, capacity: number) => {
+    const newSecId = `0192e85a-0030-7000-8000-${Date.now().toString(16).padStart(12, '0').slice(-12)}`
     const newSection: SchoolSection = {
-      id: `sec-${Date.now()}`,
+      id: newSecId,
       institution_id: tenantId,
       class_id: classId,
       name,
@@ -163,23 +216,37 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
       created_at: new Date().toISOString(),
     }
     setSections((prev) => [...prev, newSection])
+
+    if (isLiveSupabaseConfigured) {
+      supabase.from('sections').insert([newSection]).then(({ error }) => {
+        if (error) console.info('Supabase section insert notice:', error.message)
+      })
+    }
   }
 
   const addCourse = (name: string, code: string) => {
+    const newCrsId = `0192e85a-0025-7000-8000-${Date.now().toString(16).padStart(12, '0').slice(-12)}`
     const newCourse: CoachingCourse = {
-      id: `crs-${Date.now()}`,
+      id: newCrsId,
       institution_id: tenantId,
-      academic_year_id: academicYears[0]?.id || 'ay-2026',
+      academic_year_id: academicYears[0]?.id || '0192e85a-0010-7000-8000-000000000001',
       name,
       code,
       created_at: new Date().toISOString(),
     }
     setCourses((prev) => [...prev, newCourse])
+
+    if (isLiveSupabaseConfigured) {
+      supabase.from('courses').insert([newCourse]).then(({ error }) => {
+        if (error) console.info('Supabase course insert notice:', error.message)
+      })
+    }
   }
 
   const addBatch = (courseId: string, name: string, capacity: number) => {
+    const newBatchId = `0192e85a-0035-7000-8000-${Date.now().toString(16).padStart(12, '0').slice(-12)}`
     const newBatch: CoachingBatch = {
-      id: `btc-${Date.now()}`,
+      id: newBatchId,
       institution_id: tenantId,
       course_id: courseId,
       name,
@@ -187,11 +254,18 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
       created_at: new Date().toISOString(),
     }
     setBatches((prev) => [...prev, newBatch])
+
+    if (isLiveSupabaseConfigured) {
+      supabase.from('batches').insert([newBatch]).then(({ error }) => {
+        if (error) console.info('Supabase batch insert notice:', error.message)
+      })
+    }
   }
 
   const addSubject = (code: string, name: string, description: string) => {
+    const newSubjId = `0192e85a-0040-7000-8000-${Date.now().toString(16).padStart(12, '0').slice(-12)}`
     const newSubject: Subject = {
-      id: `sbj-${Date.now()}`,
+      id: newSubjId,
       institution_id: tenantId,
       code,
       name,
@@ -199,6 +273,12 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
       created_at: new Date().toISOString(),
     }
     setSubjects((prev) => [...prev, newSubject])
+
+    if (isLiveSupabaseConfigured) {
+      supabase.from('subjects').insert([newSubject]).then(({ error }) => {
+        if (error) console.info('Supabase subject insert notice:', error.message)
+      })
+    }
   }
 
   const assignTeacher = (data: {

@@ -14,6 +14,7 @@ import {
   Video,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useAuth } from '@/contexts/auth-context'
 
 interface NavbarProps {
   onOpenRegister: () => void
@@ -26,6 +27,7 @@ export function Navbar({ onOpenRegister, onOpenSignIn }: NavbarProps) {
 
   const isHomePage = location.pathname === '/'
   const isAboutPage = location.pathname === '/about'
+  const { isAuthenticated, signOut } = useAuth()
 
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -281,24 +283,47 @@ export function Navbar({ onOpenRegister, onOpenSignIn }: NavbarProps) {
 
         {/* Right Action CTAs */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onOpenSignIn}
-            className="text-slate-700 hover:text-slate-950 font-semibold text-xs sm:text-sm px-2.5 sm:px-3.5 cursor-pointer"
-          >
-            Sign in
-          </Button>
+          {isAuthenticated ? (
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                onClick={() => window.location.reload()}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm shadow-sm transition-all px-3 sm:px-4 h-9 sm:h-10 rounded-xl flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>My Account</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => signOut()}
+                className="text-slate-600 hover:text-red-600 text-xs sm:text-sm font-semibold cursor-pointer"
+              >
+                Sign Out
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onOpenSignIn}
+                className="text-slate-700 hover:text-slate-950 font-semibold text-xs sm:text-sm px-2.5 sm:px-3.5 cursor-pointer"
+              >
+                Sign in
+              </Button>
 
-          <Button
-            size="sm"
-            onClick={onOpenRegister}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm shadow-sm transition-all px-3 sm:px-4 h-9 sm:h-10 rounded-xl flex items-center gap-1.5 cursor-pointer"
-          >
-            <span className="hidden sm:inline">Create your institution</span>
-            <span className="sm:hidden">Get started</span>
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Button>
+              <Button
+                size="sm"
+                onClick={onOpenRegister}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm shadow-sm transition-all px-3 sm:px-4 h-9 sm:h-10 rounded-xl flex items-center gap-1.5 cursor-pointer"
+              >
+                <span className="hidden sm:inline">Create your institution</span>
+                <span className="sm:hidden">Get started</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
+            </>
+          )}
 
           {/* Mobile Menu Hamburger */}
           <button
@@ -380,25 +405,51 @@ export function Navbar({ onOpenRegister, onOpenSignIn }: NavbarProps) {
           </nav>
 
           <div className="pt-3 border-t border-slate-100 space-y-2">
-            <Button
-              variant="outline"
-              className="w-full text-xs font-semibold h-10 rounded-xl"
-              onClick={() => {
-                setMobileMenuOpen(false)
-                onOpenSignIn()
-              }}
-            >
-              Sign in to Portal
-            </Button>
-            <Button
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold h-10 rounded-xl"
-              onClick={() => {
-                setMobileMenuOpen(false)
-                onOpenRegister()
-              }}
-            >
-              Create Your Institution Portal
-            </Button>
+            {isAuthenticated ? (
+              <>
+                <Button
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold h-10 rounded-xl"
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    window.location.reload()
+                  }}
+                >
+                  My Account
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full text-xs font-semibold h-10 rounded-xl text-red-600 hover:bg-red-50"
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    signOut()
+                  }}
+                >
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  className="w-full text-xs font-semibold h-10 rounded-xl"
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    onOpenSignIn()
+                  }}
+                >
+                  Sign In
+                </Button>
+                <Button
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold h-10 rounded-xl"
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    onOpenRegister()
+                  }}
+                >
+                  Create Your Institution Portal
+                </Button>
+              </>
+            )}
           </div>
         </div>
       )}

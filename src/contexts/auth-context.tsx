@@ -84,7 +84,7 @@ const BASE_ROLE_PERMISSIONS: Record<UserRole, string[]> = {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { currentTenant, isPlatformAdmin } = useTenant()
+  const { currentTenant, isPlatformAdmin, setDevSubdomain } = useTenant()
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     return localStorage.getItem('educore_auth_state') === 'true'
@@ -169,6 +169,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setSelectedRole('institution_admin')
     localStorage.removeItem('educore_demo_role')
     localStorage.removeItem('educore_auth_state')
+    localStorage.removeItem('educore_dev_subdomain')
+    setDevSubdomain(null)
   }
 
   // Auto-switch to founder when navigating to admin portal

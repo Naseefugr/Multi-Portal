@@ -27,9 +27,13 @@ import type {
   LiveClassSession,
 } from '@/types/database.types'
 
+export const BRIGHT_TENANT_ID = '0192e85a-0001-7000-8000-000000000001'
+export const APEX_TENANT_ID = '0192e85a-0002-7000-8000-000000000002'
+export const ALNOOR_TENANT_ID = '0192e85a-0003-7000-8000-000000000003'
+
 export const INITIAL_INSTITUTIONS: Institution[] = [
   {
-    id: 'inst-001-bright',
+    id: BRIGHT_TENANT_ID,
     slug: 'bright',
     name: 'Bright Valley International School',
     institution_type: 'school',
@@ -44,7 +48,7 @@ export const INITIAL_INSTITUTIONS: Institution[] = [
     updated_at: '2026-01-15T10:00:00Z',
   },
   {
-    id: 'inst-002-apex',
+    id: APEX_TENANT_ID,
     slug: 'apex-prep',
     name: 'Apex Competitive Coaching Academy',
     institution_type: 'coaching_institute',
@@ -59,7 +63,7 @@ export const INITIAL_INSTITUTIONS: Institution[] = [
     updated_at: '2026-02-01T08:30:00Z',
   },
   {
-    id: 'inst-003-alnoor',
+    id: ALNOOR_TENANT_ID,
     slug: 'alnoor',
     name: 'Al-Noor Grammar School',
     institution_type: 'school',
@@ -135,7 +139,7 @@ export const INITIAL_PROFILES: Profile[] = [
 export const INITIAL_MEMBERSHIPS: InstitutionMembership[] = [
   {
     id: 'mem-admin-bright',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     user_id: 'usr-admin-bright',
     role: 'institution_admin',
     status: 'active',
@@ -144,7 +148,7 @@ export const INITIAL_MEMBERSHIPS: InstitutionMembership[] = [
   },
   {
     id: 'mem-mgr-bright',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     user_id: 'usr-mgr-bright',
     role: 'manager',
     status: 'active',
@@ -153,7 +157,7 @@ export const INITIAL_MEMBERSHIPS: InstitutionMembership[] = [
   },
   {
     id: 'mem-teacher-bright',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     user_id: 'usr-teacher-bright',
     role: 'teacher',
     status: 'active',
@@ -162,7 +166,7 @@ export const INITIAL_MEMBERSHIPS: InstitutionMembership[] = [
   },
   {
     id: 'mem-student-bright',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     user_id: 'usr-student-bright',
     role: 'student',
     status: 'active',
@@ -171,7 +175,7 @@ export const INITIAL_MEMBERSHIPS: InstitutionMembership[] = [
   },
   {
     id: 'mem-parent-bright',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     user_id: 'usr-parent-bright',
     role: 'parent',
     status: 'active',
@@ -183,7 +187,7 @@ export const INITIAL_MEMBERSHIPS: InstitutionMembership[] = [
 export const INITIAL_MANAGER_OVERRIDES: PermissionOverride[] = [
   {
     id: 'ovr-1',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     membership_id: 'mem-mgr-bright',
     permission_key: 'attendance.record',
     is_granted: true,
@@ -192,7 +196,7 @@ export const INITIAL_MANAGER_OVERRIDES: PermissionOverride[] = [
   },
   {
     id: 'ovr-2',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     membership_id: 'mem-mgr-bright',
     permission_key: 'attendance.view_summary',
     is_granted: true,
@@ -201,7 +205,7 @@ export const INITIAL_MANAGER_OVERRIDES: PermissionOverride[] = [
   },
   {
     id: 'ovr-3',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     membership_id: 'mem-mgr-bright',
     permission_key: 'students.view_list',
     is_granted: true,
@@ -210,7 +214,7 @@ export const INITIAL_MANAGER_OVERRIDES: PermissionOverride[] = [
   },
   {
     id: 'ovr-4',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     membership_id: 'mem-mgr-bright',
     permission_key: 'class_posts.create',
     is_granted: true,
@@ -222,7 +226,7 @@ export const INITIAL_MANAGER_OVERRIDES: PermissionOverride[] = [
 export const INITIAL_ACADEMIC_YEARS: AcademicYear[] = [
   {
     id: 'ay-2026',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     name: 'Academic Year 2026–2027',
     start_date: '2026-04-01',
     end_date: '2027-03-31',
@@ -234,7 +238,7 @@ export const INITIAL_ACADEMIC_YEARS: AcademicYear[] = [
 export const INITIAL_CLASSES: SchoolClass[] = [
   {
     id: 'cls-g9',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     academic_year_id: 'ay-2026',
     name: 'Grade 9',
     display_order: 1,
@@ -242,7 +246,7 @@ export const INITIAL_CLASSES: SchoolClass[] = [
   },
   {
     id: 'cls-g10',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     academic_year_id: 'ay-2026',
     name: 'Grade 10',
     display_order: 2,
@@ -253,7 +257,7 @@ export const INITIAL_CLASSES: SchoolClass[] = [
 export const INITIAL_SECTIONS: SchoolSection[] = [
   {
     id: 'sec-g10-a',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     class_id: 'cls-g10',
     name: 'Section A (Newton)',
     capacity: 35,
@@ -261,7 +265,7 @@ export const INITIAL_SECTIONS: SchoolSection[] = [
   },
   {
     id: 'sec-g10-b',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     class_id: 'cls-g10',
     name: 'Section B (Einstein)',
     capacity: 35,
@@ -294,7 +298,7 @@ export const INITIAL_BATCHES: CoachingBatch[] = [
 export const INITIAL_SUBJECTS: Subject[] = [
   {
     id: 'sbj-math',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     code: 'MTH-101',
     name: 'Pure & Applied Mathematics',
     description: 'Algebra, Geometry, Trigonometry, and Calculus foundations',
@@ -302,7 +306,7 @@ export const INITIAL_SUBJECTS: Subject[] = [
   },
   {
     id: 'sbj-phys',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     code: 'PHY-101',
     name: 'Physics & Mechanics',
     description: 'Kinematics, Thermodynamics, Optics, and Electromagnetism',
@@ -313,7 +317,7 @@ export const INITIAL_SUBJECTS: Subject[] = [
 export const INITIAL_TEACHER_ASSIGNMENTS: TeacherAssignment[] = [
   {
     id: 'tas-1',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     teacher_membership_id: 'mem-teacher-bright',
     subject_id: 'sbj-math',
     section_id: 'sec-g10-a',
@@ -327,7 +331,7 @@ export const INITIAL_TEACHER_ASSIGNMENTS: TeacherAssignment[] = [
 export const INITIAL_STUDENTS: StudentRecord[] = [
   {
     id: 'std-001',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     student_membership_id: 'mem-student-bright',
     admission_number: 'BVIS-2026-0104',
     full_name: 'Aarav Patel',
@@ -344,7 +348,7 @@ export const INITIAL_STUDENTS: StudentRecord[] = [
   },
   {
     id: 'std-002',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     student_membership_id: 'mem-student-002',
     admission_number: 'BVIS-2026-0105',
     full_name: 'Diya Sengupta',
@@ -361,7 +365,7 @@ export const INITIAL_STUDENTS: StudentRecord[] = [
   },
   {
     id: 'std-003',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     student_membership_id: 'mem-student-003',
     admission_number: 'BVIS-2026-0106',
     full_name: 'Kabir Khan',
@@ -385,7 +389,7 @@ export const INITIAL_STUDENTS: StudentRecord[] = [
 export const INITIAL_CLASS_POSTS: ClassPost[] = [
   {
     id: 'post-1',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     author_id: 'usr-teacher-bright',
     author_name: 'Prof. David Wilson',
     author_role: 'teacher',
@@ -416,7 +420,7 @@ export const INITIAL_CLASS_POSTS: ClassPost[] = [
   },
   {
     id: 'post-2',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     author_id: 'usr-mgr-bright',
     author_name: 'Rohan Mehra',
     author_role: 'manager',
@@ -437,7 +441,7 @@ export const INITIAL_CLASS_POSTS: ClassPost[] = [
 export const INITIAL_ASSIGNMENTS: Assignment[] = [
   {
     id: 'asg-1',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     author_id: 'usr-teacher-bright',
     author_name: 'Prof. David Wilson',
     section_id: 'sec-g10-a',
@@ -455,7 +459,7 @@ export const INITIAL_ASSIGNMENTS: Assignment[] = [
   },
   {
     id: 'asg-2',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     author_id: 'usr-teacher-bright',
     author_name: 'Prof. David Wilson',
     section_id: 'sec-g10-a',
@@ -476,7 +480,7 @@ export const INITIAL_ASSIGNMENTS: Assignment[] = [
 export const INITIAL_SUBMISSIONS: AssignmentSubmission[] = [
   {
     id: 'sub-1',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     assignment_id: 'asg-1',
     student_membership_id: 'mem-student-bright',
     student_name: 'Aarav Patel',
@@ -496,7 +500,7 @@ export const INITIAL_SUBMISSIONS: AssignmentSubmission[] = [
   },
   {
     id: 'sub-2',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     assignment_id: 'asg-1',
     student_membership_id: 'mem-student-002',
     student_name: 'Diya Sengupta',
@@ -515,7 +519,7 @@ export const INITIAL_SUBMISSIONS: AssignmentSubmission[] = [
 export const INITIAL_ATTENDANCE_SESSIONS: AttendanceSession[] = [
   {
     id: 'att-sess-1',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     session_date: '2026-11-12',
     section_id: 'sec-g10-a',
     cohort_name: 'Grade 10 - Section A',
@@ -529,7 +533,7 @@ export const INITIAL_ATTENDANCE_SESSIONS: AttendanceSession[] = [
 export const INITIAL_ATTENDANCE_RECORDS: StudentAttendanceRecord[] = [
   {
     id: 'att-rec-1',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     session_id: 'att-sess-1',
     student_id: 'std-001',
     student_name: 'Aarav Patel',
@@ -539,7 +543,7 @@ export const INITIAL_ATTENDANCE_RECORDS: StudentAttendanceRecord[] = [
   },
   {
     id: 'att-rec-2',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     session_id: 'att-sess-1',
     student_id: 'std-002',
     student_name: 'Diya Sengupta',
@@ -548,7 +552,7 @@ export const INITIAL_ATTENDANCE_RECORDS: StudentAttendanceRecord[] = [
   },
   {
     id: 'att-rec-3',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     session_id: 'att-sess-1',
     student_id: 'std-003',
     student_name: 'Kabir Khan',
@@ -561,7 +565,7 @@ export const INITIAL_ATTENDANCE_RECORDS: StudentAttendanceRecord[] = [
 export const INITIAL_EXAMS: Examination[] = [
   {
     id: 'ex-midterm-26',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     name: 'Term 1 Mid-Year Examination (October 2026)',
     academic_year_id: 'ay-2026',
     start_date: '2026-10-15',
@@ -622,19 +626,19 @@ export const INITIAL_EXAM_RESULTS: ExamSubjectResult[] = [
 export const INITIAL_FEE_CATEGORIES: FeeCategory[] = [
   {
     id: 'fc-tuition',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     name: 'Tuition Fee (Term 1)',
     description: 'Academic tuition and classroom instruction',
   },
   {
     id: 'fc-lab',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     name: 'Science & Computer Lab Fee',
     description: 'Laboratory equipment, materials, and digital infrastructure',
   },
   {
     id: 'fc-transport',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     name: 'Campus Transportation',
     description: 'Quarterly bus pass and transit route fees',
   },
@@ -643,7 +647,7 @@ export const INITIAL_FEE_CATEGORIES: FeeCategory[] = [
 export const INITIAL_FEE_STRUCTURES: FeeStructure[] = [
   {
     id: 'fs-1',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     academic_year_id: 'ay-2026',
     fee_category_id: 'fc-tuition',
     fee_category_name: 'Tuition Fee (Term 1)',
@@ -653,7 +657,7 @@ export const INITIAL_FEE_STRUCTURES: FeeStructure[] = [
   },
   {
     id: 'fs-2',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     academic_year_id: 'ay-2026',
     fee_category_id: 'fc-lab',
     fee_category_name: 'Science & Computer Lab Fee',
@@ -666,7 +670,7 @@ export const INITIAL_FEE_STRUCTURES: FeeStructure[] = [
 export const INITIAL_INVOICES: StudentInvoice[] = [
   {
     id: 'inv-101',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     invoice_number: 'BVIS-INV-2026-0089',
     student_id: 'std-001',
     student_name: 'Aarav Patel',
@@ -681,7 +685,7 @@ export const INITIAL_INVOICES: StudentInvoice[] = [
   },
   {
     id: 'inv-102',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     invoice_number: 'BVIS-INV-2026-0090',
     student_id: 'std-002',
     student_name: 'Diya Sengupta',
@@ -696,7 +700,7 @@ export const INITIAL_INVOICES: StudentInvoice[] = [
   },
   {
     id: 'inv-103',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     invoice_number: 'BVIS-INV-2026-0091',
     student_id: 'std-003',
     student_name: 'Kabir Khan',
@@ -714,7 +718,7 @@ export const INITIAL_INVOICES: StudentInvoice[] = [
 export const INITIAL_PAYMENTS: PaymentReceipt[] = [
   {
     id: 'pay-001',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     invoice_id: 'inv-101',
     invoice_number: 'BVIS-INV-2026-0089',
     receipt_number: 'BVIS-REC-2026-0044',
@@ -727,7 +731,7 @@ export const INITIAL_PAYMENTS: PaymentReceipt[] = [
   },
   {
     id: 'pay-002',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     invoice_id: 'inv-102',
     invoice_number: 'BVIS-INV-2026-0090',
     receipt_number: 'BVIS-REC-2026-0045',
@@ -747,7 +751,7 @@ export const INITIAL_PAYMENTS: PaymentReceipt[] = [
 export const INITIAL_ANNOUNCEMENTS: Announcement[] = [
   {
     id: 'ann-1',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     title: 'Annual Inter-School STEM Innovation Exhibition & Fair 2026',
     content:
       'We are delighted to announce that Bright Valley will host the Regional STEM Fair on December 14th. All high school students wishing to present project prototypes should submit their abstracts to the Science Department by November 25th.',
@@ -758,7 +762,7 @@ export const INITIAL_ANNOUNCEMENTS: Announcement[] = [
   },
   {
     id: 'ann-2',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     title: 'Grade 10 Extra Math Doubt-Clearing Virtual Session',
     content:
       'Prof. David Wilson will conduct a live virtual review session on quadratic equations this Saturday at 10:00 AM. Check the Live Classes tab for the secure join link.',
@@ -773,7 +777,7 @@ export const INITIAL_ANNOUNCEMENTS: Announcement[] = [
 export const INITIAL_NOTIFICATIONS: AppNotification[] = [
   {
     id: 'notif-1',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     user_id: 'usr-student-bright',
     title: 'New Assignment Published',
     message: 'Prof. David Wilson published "Assignment 04 — Polynomial Remainder Theorem".',
@@ -783,7 +787,7 @@ export const INITIAL_NOTIFICATIONS: AppNotification[] = [
   },
   {
     id: 'notif-2',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     user_id: 'usr-student-bright',
     title: 'Grade Evaluated & Published',
     message: 'Your submission for Assignment 03 scored 94/100 (A+). View feedback.',
@@ -793,7 +797,7 @@ export const INITIAL_NOTIFICATIONS: AppNotification[] = [
   },
   {
     id: 'notif-3',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     user_id: 'usr-student-bright',
     title: 'Upcoming Virtual Live Class',
     message: 'Trigonometry & Calculus Masterclass begins Saturday at 10:00 AM.',
@@ -806,7 +810,7 @@ export const INITIAL_NOTIFICATIONS: AppNotification[] = [
 export const INITIAL_LIVE_CLASSES: LiveClassSession[] = [
   {
     id: 'live-1',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     title: 'Trigonometry & Quadratic Systems Masterclass',
     agenda: 'In-depth problem solving for exercises 4.1 to 4.4 and Q&A on graphing symmetry.',
     cohort_name: 'Grade 10 - Section A',
@@ -822,7 +826,7 @@ export const INITIAL_LIVE_CLASSES: LiveClassSession[] = [
   },
   {
     id: 'live-2',
-    institution_id: 'inst-001-bright',
+    institution_id: BRIGHT_TENANT_ID,
     title: 'Physics Mechanics & Newton Laws Discussion',
     agenda: 'Friction, momentum conservation, and projectile motion review.',
     cohort_name: 'Grade 10 - Section A',
